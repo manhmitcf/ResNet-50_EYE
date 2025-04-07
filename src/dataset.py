@@ -24,17 +24,20 @@ class FishDatasetWithAugmentation(Dataset):
         return len(self.data)
 
     def __getitem__(self, idx):
+        check = False
         img_name = os.path.join(self.img_dir, self.data.iloc[idx, 2])
         if not os.path.exists(img_name):
             img_name = os.path.join(self.img_dir_aug, self.data.iloc[idx, 2])
             if not os.path.exists(img_name):
-                # Thử đổi số 5 sau dấu _ thành #
-                img_name_alternative = img_name.replace('_5', '_#')
-                if os.path.exists(img_name_alternative):
-                    img_name = img_name_alternative
-                else:
-                    raise FileNotFoundError(f"Image '{img_name}' not found.")
-
+                check = True
+        if check:
+            img_name = os.path.join(self.img_dir, self.data.iloc[idx, 2])
+            img_name = img_name.replace('_5', '_#')
+            if not os.path.exists(img_name):
+                img_name = os.path.join(self.img_dir_aug, self.data.iloc[idx, 2])
+                img_name = img_name.replace('_5', '_#')
+                if not os.path.exists(img_name):
+                    raise FileNotFoundError(f"Không tìm thấy ảnh '{img_name}'.")
         try:
             image = Image.open(img_name).convert('RGB')  # Đọc và chuyển đổi ảnh sang RGB
         except FileNotFoundError:
