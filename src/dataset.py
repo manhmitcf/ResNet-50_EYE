@@ -28,13 +28,13 @@ class FishDatasetWithAugmentation(Dataset):
         if not os.path.exists(img_name):
             img_name = os.path.join(self.img_dir_aug, self.data.iloc[idx, 2])
             if not os.path.exists(img_name):
-                print(f"Warning: Image '{img_name}' not found. Skipping.")
-                return None, None
+                raise FileNotFoundError(f"Image '{img_name}' not found.")
 
         try:
-            image = Image.open(img_name).convert('RGB')  # Read and convert image to RGB
+            image = Image.open(img_name).convert('RGB')  # Đọc và chuyển đổi ảnh sang RGB
         except FileNotFoundError:
             raise FileNotFoundError(f"Không tìm thấy ảnh '{img_name}'.")
+
 
         label = self.data.iloc[idx, 1]
         if label not in self.labels:
